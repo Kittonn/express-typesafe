@@ -1,52 +1,56 @@
 import type { Request, Response } from 'express';
 import { UserRepository } from './user.repository';
-import { BaseController } from '@express-typesafe/core';
+import { BaseController, BaseResponse } from '@express-typesafe/core';
+import { UserModel } from './user.model';
 
 export class UserController extends BaseController {
   constructor(public userRepository: UserRepository) {
     super();
   }
 
-  async getAll(req: Request, res: Response) {
+  async getAll(
+    req: Request,
+    res: Response
+  ): Promise<BaseResponse<UserModel[]>> {
     const users = await this.userRepository.getAll();
 
-    return res.json({
+    return {
       data: users,
-    });
+    };
   }
 
-  async get(req: Request, res: Response) {
+  async get(req: Request, res: Response): Promise<BaseResponse<UserModel>> {
     const user = await this.userRepository.get(req.params.id);
 
-    return res.json({
+    return {
       data: user,
-    });
+    };
   }
 
-  async create(req: Request, res: Response) {
-    const createdUser = await this.userRepository.create(req.body);
+  async create(req: Request, res: Response): Promise<BaseResponse> {
+    await this.userRepository.create(req.body);
 
-    return res.json({
-      data: createdUser,
-    });
+    return {
+      message: 'User created successfully',
+    };
   }
 
-  async update(req: Request, res: Response) {
-    const updatedUser = await this.userRepository.update({
+  async update(req: Request, res: Response): Promise<BaseResponse> {
+    await this.userRepository.update({
       ...req.body,
       id: req.params.id,
     });
 
-    return res.json({
-      data: updatedUser,
-    });
+    return {
+      message: 'User updated successfully',
+    };
   }
 
-  async delete(req: Request, res: Response) {
-    const deletedUser = await this.userRepository.delete(req.params.id);
+  async delete(req: Request, res: Response): Promise<BaseResponse> {
+    await this.userRepository.delete(req.params.id);
 
-    return res.json({
-      data: deletedUser,
-    });
+    return {
+      message: 'User deleted successfully',
+    };
   }
 }
